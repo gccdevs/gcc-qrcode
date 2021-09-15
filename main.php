@@ -5,17 +5,21 @@ add_action("wp_ajax_gcc_qr_code_generate", 'handleGenerateQRCode' );
 add_action("wp_ajax_nopriv_gcc_qr_code_generate", 'handleGenerateQRCode' );
 
 function addQRCodeMetaBox() {
-  foreach (get_post_types() as $screen) {
-    if( $value != 'nav_menu_item' &&
-    $value != 'acf-field' &&
-    $value != 'acf-field-group' &&
-    $value != 'schema' &&
-    $value != 'wp_block' &&
-    $value != 'user_request' &&
-    $value != 'customize_changeset' &&
-    $value != 'custom_css' &&
-    $value != 'oembed_cache' &&
-    $value != 'revision' ) {
+  $postTypes = get_post_types();
+  if (!$postTypes) {
+    return;
+  }
+  foreach ($postTypes as $screen) {
+    if( $screen != 'nav_menu_item' &&
+    $screen != 'acf-field' &&
+    $screen != 'acf-field-group' &&
+    $screen != 'schema' &&
+    $screen != 'wp_block' &&
+    $screen != 'user_request' &&
+    $screen != 'customize_changeset' &&
+    $screen != 'custom_css' &&
+    $screen != 'oembed_cache' &&
+    $screen != 'revision' ) {
       if(isset($_GET['action']) && $_GET['action'] == 'edit') {
         add_meta_box( 'gcc-qr-code-for-' . $screen, 'Generate QR Code', 'generateQRCodeHTML', $screen, 'side', 'low' );
       }

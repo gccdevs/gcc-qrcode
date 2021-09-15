@@ -3,6 +3,9 @@
   "description": "GCC QR Code Generator Plugin",
   "version": "1.0.0",
   "main": "main.js",
+  "engines": {
+    "node": "10.16.0"
+  },
   "scripts": {
     "build": "webpack --mode=development",
     "watch": "webpack --watch --mode=development",
