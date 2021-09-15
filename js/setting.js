@@ -1,4 +1,4 @@
-const { generateQRCode } = require('./common');
+const { generateQRCode } = require('./ajax');
 
 const cleanUp = target => {
 

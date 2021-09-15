@@ -14,12 +14,8 @@ export const generateQRCode = (target, type, withLogo, content = null, callback 
     dataType: 'json',
     data,
   }).always(function(response) {
-    if (response.url) {
-      let src = '<a class="qrcode-img-wrapper ' + type + '" href="'+ response.url + '" target="_blank"><img src="' + response.url + '"></a>';
-      target.prepend(src);
-      if(callback) {
-        callback(target, response, type);
-      }
+    if(callback) {
+      callback(target, response, type);
     }
   });
 }

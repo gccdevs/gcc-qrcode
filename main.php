@@ -32,15 +32,13 @@ function generateQRCodeHTML() {
   $post_id = $post->ID;
 
   $filename = 'qrcode_' . $post_type . '_' . $post_id . '.png';
-
   $file = wp_upload_dir()['basedir'] . '/qr-code-pngs' . '/' . $filename;
 
-  if( file_exists($file)) {
+  if(file_exists($file)) {
     showExistingCodeTemplate($post, $filename);
   } else {
     createNewCodeTemplate($post);
   }
-
 }
 
 function showExistingCodeTemplate($post, $filename) {
@@ -51,6 +49,7 @@ function showExistingCodeTemplate($post, $filename) {
       <img src="<?= $link ?>">
     </a>
     <a href="javascript:void(0);" class="regenerate-qr-code-link">Regenerate</a>
+    <a href="javascript:void(0);" class="regenerate-qr-code-link with-logo">Regenerate (With logo)</a>
   </div>
   <?php
 }
@@ -60,6 +59,9 @@ function createNewCodeTemplate($post) {
   <div class="gcc-qr-code--meta-box-wrapper generate" data-name="<?= $post->post_type ?>" data-id="<?= $post->ID ?>">
     <a href="javascript:void(0);" class="generate-qr-code-link">
       Generate
+    </a>
+    <a href="javascript:void(0);" class="generate-qr-code-link with-logo">
+      Generate (with logo)
     </a>
   </div>
   <?php

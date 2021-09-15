@@ -62,13 +62,15 @@ function generateQRCode( $data, $post_type, $post_id, $showLogo = false ) {
     @unlink($absolutePath);
   }
 
+  $withLogo = is_true($showLogo);
+
   try {
-    QRcode::png($data , $absolutePath, QR_ECLEVEL_H, 40, 2);
+    QRcode::png($data, $absolutePath, QR_ECLEVEL_H, 40, 2);
   } catch (\Exception $e) {
     return 'Failed to generate qr code';
   }
 
-  if ($showLogo) {
+  if ($withLogo) {
     try {
       addLogo($absolutePath, $filename);
     } catch( \Exception $e) {
@@ -114,4 +116,9 @@ function addLogo ($path, $filename) {
   );
 
   imagepng($QR, $path);
+}
+
+function is_true($val, $return_null=false){
+  $boolval = ( is_string($val) ? filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val );
+  return ( $boolval===null && !$return_null ? false : $boolval );
 }

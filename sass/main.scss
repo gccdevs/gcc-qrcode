@@ -44,15 +44,8 @@
     box-shadow: none;
     outline: none;
   }
+}
 
-  &.disabled {
-    margin-top: 114px;
-    pointer-events: none;
-    color: black;
-    text-decoration: none;
-
-    &:hover {
-      cursor: text;
-    }
-  }
+.hide {
+  display: none;
 }
