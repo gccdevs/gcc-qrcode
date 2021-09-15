@@ -27,7 +27,7 @@ function generateQRCode(target, type, callback = null) {
     method: 'POST',
     dataType: 'json',
     data: data,
-  }).done(function(response) {
+  }).always(function(response) {
     let src = '<a class="qrcode-img-wrapper ' + type + '" href="'+ response.url + '" target="_blank"><img src="' + response.url + '"></a>';
     target.prepend(src);
 
@@ -49,7 +49,7 @@ function cleanUpLabels(target, response, type) {
   target.find('.regenerate-qr-code-link').removeClass( 'disabled' );
   target.find('.regenerate-qr-code-link').text( 'Regenerate' );
   target.addClass('regenerate').removeClass('generate');
-  if( type === 'generate' ) {
+  if (type === 'generate') {
     location.reload(true);
   }
 }

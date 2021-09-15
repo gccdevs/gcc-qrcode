@@ -33,7 +33,7 @@ function generateQRCodeHTML() {
   $post_type = $post->post_type;
   $post_id = $post->ID;
 
-  $filename = 'qrcode_' . $post_type . $post_id . '.png';
+  $filename = 'qrcode_' . $post_type . '_' . $post_id . '.png';
 
   $file = wp_upload_dir()['basedir'] . '/qr-code-pngs' . '/' . $filename;
 
@@ -82,7 +82,8 @@ function handleGenerateQRCode() {
   $path = generateQRCode($data, $post_type, $post_id, $type, true);
   echo json_encode([
     'url' => wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $path,
-    'status' => 200 ]);
+    'status' => 200
+  ]);
   exit;
 }
 
@@ -96,23 +97,18 @@ function generateQRCode( $data, $post_type, $post_id, $type, $showLogo = false )
   if(!file_exists($path)) {
     mkdir($path, 0777, true);
   }
-  $filename = '/qrcode_'. $post_type . $post_id . '.png';
+  $filename = '/qrcode_'. $post_type . '_' . $post_id . '.png';
 
   $absolutePath = $path . $filename;
 
-  if(!file_exists($absolutePath)) {
-    try {
-      QRcode::png($data , $absolutePath, QR_ECLEVEL_H);
-    } catch (\Exception $e) {
-      return 'Failed to generate QR code';
-    }
-  } else if($type == 'regenerate') {
-    try {
-      @unlink($absolutePath);
-      QRcode::png($data , $absolutePath, QR_ECLEVEL_H);
-    } catch( \Exception $e) {
-      return 'Failed to regenerate QR code';
-    }
+  if(file_exists($absolutePath)) {
+    @unlink($absolutePath);
+  }
+
+  try {
+    QRcode::png($data , $absolutePath, QR_ECLEVEL_H, 40, 2);
+  } catch (\Exception $e) {
+    return 'Failed to generate qr code';
   }
 
   if ($showLogo) {
@@ -128,7 +124,7 @@ function generateQRCode( $data, $post_type, $post_id, $type, $showLogo = false )
 
 function addLogo ($path, $filename) {
 
-  $logoPath = 'https://www.chromatix.com.au/assets/themes/chromatix-2018-child/dist/favicon/favicon-16x16.png';
+  $logoPath = 'https://glorycitychurch.com/wp-content/uploads/2019/01/GC-LOGO-150x150.png';
   $logo = imagecreatefrompng($logoPath);
   $QR = imagecreatefrompng(wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $filename);
   $QR_width = imagesx($QR);
@@ -145,15 +141,14 @@ function addLogo ($path, $filename) {
   }
 
   // Scale logo to fit in the QR Code
-  $logo_qr_width = $QR_width / 3;
-  $scale = $logo_width / $logo_qr_width;
-  $logo_qr_height = $logo_height / $scale;
+  $logo_qr_width = $QR_width / 4;
+  $logo_qr_height = $logo_height / 4;
 
   $result = imagecopyresampled(
     $QR,
     $logo,
-    $QR_width / 3,
-    $QR_height / 3,
+    ($QR_width - $logo_qr_width) / 2,
+    ($QR_height - $logo_qr_height) / 2,
     0,
     0,
     $logo_qr_width,
@@ -161,9 +156,6 @@ function addLogo ($path, $filename) {
     $logo_width,
     $logo_height
   );
-
-  echo '$result: ' . $result;
-  echo '$QR: ' . $QR;
 
   imagepng($QR, $path);
 }
