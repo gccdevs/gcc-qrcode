@@ -1,7 +1,12 @@
 const { generateQRCode } = require('./ajax');
 
-const cleanUp = target => {
+const showImage = (target, response, type, reload) => {
+  const $settingPage = jQuery('.generate-qr-code-settings');
 
+  if (response && response.image) {
+    const link = `<a download href="${ response.image }"><img src="${ response.image }" id="qr-code-${ response.id }" /></a>`
+    $settingPage.find('.generate-here .result').append(link)
+  }
 }
 
 jQuery( document ).ready( function() {
@@ -11,7 +16,7 @@ jQuery( document ).ready( function() {
     e.preventDefault();
     const data = $settingPage.find('.generate-here textarea.content').val()
     if (data) {
-      generateQRCode($settingPage.find('.generate-here .result'), 'generate-flush', jQuery(this).hasClass('with-logo'), data, cleanUp);
+      generateQRCode($settingPage.find('.generate-here .result'), 'generate-flush', jQuery(this).hasClass('with-logo'), data, showImage);
     }
   });
 });

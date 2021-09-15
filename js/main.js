@@ -24,7 +24,9 @@ function removingOldQRCode() {
   parent.find('a.qrcode-img-wrapper').remove();
 }
 
-function cleanUpLabels() {
+function cleanUpLabels(target, response, type, reload) {
   jQuery( 'a.regenerate-qr-code-link' ).removeClass('hide');
-  location.reload(true);
+  if (reload) {
+    location.reload(true);
+  }
 }

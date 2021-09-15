@@ -51,7 +51,7 @@ function displayPluginAdminDashboard() {
           <button class="button button-primary generate">Generate</button>
           <button class="button button-secondary generate with-logo">Generate with logo</button>
         </div>
-        <div class="result"></div>
+        <div class="result mt-2"></div>
       </div>
     </div>
   </div>

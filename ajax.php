@@ -11,16 +11,21 @@ function handleGenerateQRCode() {
 
   switch ($type) {
     case 'generate-flush':
-      echo json_encode([
-        'url' => 'here',
-        'status' => 200
-      ]);
       $content = array_get( $_POST, 'content' );
       if (!$content) {
         exit;
       }
-      flushQRCode($content, $withLogo);
-      break;
+      $prefix = 'qr_code_image';
+      $id = rand(100000,999999);
+      $path = generateQRCode($content, $prefix, $id, is_true($withLogo));
+      $img = file_get_contents(wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $path);
+      $base64 = base64_encode($img);
+      remove_logo($prefix, $id);
+      echo json_encode([
+        'id' => $id,
+        'image' => 'data:image/png;base64,' . $base64,
+        'status' => 200
+      ]);
     default:
       if(!$post_type) {
         exit;
@@ -29,19 +34,13 @@ function handleGenerateQRCode() {
         exit;
       }
       $data = get_permalink($post_id);
-      $path = generateQRCode($data, $post_type, $post_id, $withLogo);
+      $path = generateQRCode($data, $post_type, $post_id, is_true($withLogo));
       echo json_encode([
         'url' => wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $path,
         'status' => 200
       ]);
-      break;
   }
   exit;
-}
-
-function flushQRCode($data, $withLogo) {
-  $options = get_option( 'qr_code_settings' );
-  var_dump($options);
 }
 
 function generateQRCode( $data, $post_type, $post_id, $showLogo = false ) {
@@ -62,15 +61,13 @@ function generateQRCode( $data, $post_type, $post_id, $showLogo = false ) {
     @unlink($absolutePath);
   }
 
-  $withLogo = is_true($showLogo);
-
   try {
     QRcode::png($data, $absolutePath, QR_ECLEVEL_H, 40, 2);
   } catch (\Exception $e) {
     return 'Failed to generate qr code';
   }
 
-  if ($withLogo) {
+  if ($showLogo) {
     try {
       addLogo($absolutePath, $filename);
     } catch( \Exception $e) {
@@ -116,6 +113,14 @@ function addLogo ($path, $filename) {
   );
 
   imagepng($QR, $path);
+}
+
+function remove_logo($post_type, $post_id) {
+  $filename = '/qrcode_'. $post_type . '_' . $post_id . '.png';
+  $absolutePath = wp_upload_dir()['basedir'] . '/qr-code-pngs' . $filename;
+  if(file_exists($absolutePath)) {
+    @unlink($absolutePath);
+  }
 }
 
 function is_true($val, $return_null=false){

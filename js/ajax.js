@@ -15,7 +15,7 @@ export const generateQRCode = (target, type, withLogo, content = null, callback 
     data,
   }).always(function(response) {
     if(callback) {
-      callback(target, response, type);
+      callback(target, response, type, !!response.url);
     }
   });
 }
