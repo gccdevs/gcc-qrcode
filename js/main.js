@@ -1,41 +1,18 @@
-jQuery( document ).ready( function() {
+const { generateQRCode } = require('./common');
 
+jQuery( document ).ready( function() {
   jQuery( 'a.generate-qr-code-link' ).on( 'click', function ( e ) {
     e.preventDefault();
     jQuery(this).addClass('disabled');
-    generateQRCode(jQuery(this).closest('.gcc-qr-code--meta-box-wrapper'), 'generate', cleanUpLabels);
+    generateQRCode(jQuery(this).closest('.gcc-qr-code--meta-box-wrapper'), 'generate', jQuery(this).hasClass('with-logo'), null, cleanUpLabels);
   });
 
   jQuery( 'a.regenerate-qr-code-link' ).on( 'click', function ( e ) {
     let target = jQuery(this);
     removingOldQRCode(target);
-    generateQRCode(target.closest('.gcc-qr-code--meta-box-wrapper.regenerate'), 'regenerate', cleanUpLabels);
+    generateQRCode(target.closest('.gcc-qr-code--meta-box-wrapper.regenerate'), 'regenerate', jQuery(this).hasClass('with-logo'), null, cleanUpLabels);
   });
-
 });
-
-function generateQRCode(target, type, callback = null) {
-  let data = {
-    name: target.data( 'name' ),
-    id: target.data( 'id' ),
-    type: type,
-    action: 'gcc_qr_code_generate',
-  }
-
-  jQuery.ajax({
-    url: window.ajaxurl,
-    method: 'POST',
-    dataType: 'json',
-    data: data,
-  }).always(function(response) {
-    let src = '<a class="qrcode-img-wrapper ' + type + '" href="'+ response.url + '" target="_blank"><img src="' + response.url + '"></a>';
-    target.prepend(src);
-
-    if(callback) {
-      callback(target, response, type);
-    }
-  });
-}
 
 function removingOldQRCode(target) {
   target.addClass( 'disabled' );

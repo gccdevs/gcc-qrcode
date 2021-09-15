@@ -16,5 +16,7 @@ add_action('plugins_loaded', 'plugin_loaded');
 function plugin_loaded() {
   require_once 'enqueue.php';
   require_once 'lib/qrlib.php';
+  require_once 'ajax.php';
   require_once 'main.php';
+  require_once 'setting.php';
 }

@@ -14,6 +14,7 @@ module.exports = async( env, argv ) => {
   let config = {
     entry: {
       "qr-code-main-script": './js/main.js',
+      "qr-code-setting-script": './js/setting.js',
       "qr-code-main-style": './sass/main.scss',
     },
     output: {
