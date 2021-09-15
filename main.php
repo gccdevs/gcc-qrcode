@@ -79,14 +79,14 @@ function handleGenerateQRCode() {
   }
 
   $data = get_permalink($post_id);
-  $path = generateQRCode($data, $post_type, $post_id, $type);
+  $path = generateQRCode($data, $post_type, $post_id, $type, true);
   echo json_encode([
     'url' => wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $path,
     'status' => 200 ]);
   exit;
 }
 
-function generateQRCode( $data, $post_type, $post_id, $type ) {
+function generateQRCode( $data, $post_type, $post_id, $type, $showLogo = false ) {
   if( !$data ) {
     return;
   }
@@ -101,15 +101,69 @@ function generateQRCode( $data, $post_type, $post_id, $type ) {
   $absolutePath = $path . $filename;
 
   if(!file_exists($absolutePath)) {
-    QRcode::png($data , $absolutePath);
+    try {
+      QRcode::png($data , $absolutePath, QR_ECLEVEL_H);
+    } catch (\Exception $e) {
+      return 'Failed to generate QR code';
+    }
   } else if($type == 'regenerate') {
     try {
       @unlink($absolutePath);
-      QRcode::png($data , $absolutePath);
+      QRcode::png($data , $absolutePath, QR_ECLEVEL_H);
     } catch( \Exception $e) {
-      return 'Failed to deleted old file';
+      return 'Failed to regenerate QR code';
+    }
+  }
+
+  if ($showLogo) {
+    try {
+      addLogo($absolutePath, $filename);
+    } catch( \Exception $e) {
+      return 'Failed to attach logo to QR code';
     }
   }
 
   return $filename;
+}
+
+function addLogo ($path, $filename) {
+
+  $logoPath = 'https://www.chromatix.com.au/assets/themes/chromatix-2018-child/dist/favicon/favicon-16x16.png';
+  $logo = imagecreatefrompng($logoPath);
+  $QR = imagecreatefrompng(wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $filename);
+  $QR_width = imagesx($QR);
+  $QR_height = imagesy($QR);
+  $logo_width = imagesx($logo);
+  $logo_height = imagesy($logo);
+
+  if (!$QR_width || !$QR_height) {
+    throw new Error('Invalid QR code size');
+  }
+
+  if (!$logo_width || !$logo_height || $logo_width > $QR_width) {
+    throw new Error('Invalid logo size');
+  }
+
+  // Scale logo to fit in the QR Code
+  $logo_qr_width = $QR_width / 3;
+  $scale = $logo_width / $logo_qr_width;
+  $logo_qr_height = $logo_height / $scale;
+
+  $result = imagecopyresampled(
+    $QR,
+    $logo,
+    $QR_width / 3,
+    $QR_height / 3,
+    0,
+    0,
+    $logo_qr_width,
+    $logo_qr_height,
+    $logo_width,
+    $logo_height
+  );
+
+  echo '$result: ' . $result;
+  echo '$QR: ' . $QR;
+
+  imagepng($QR, $path);
 }

@@ -1,5 +1,12 @@
 {
-  "name": "Tony Gao",
+  "name": "gccdevs/gccqrcode",
+  "authors": [
+    {
+      "name": "Tony",
+      "email": "gaohaoqian@gmail.com",
+      "homepage": "https://github.com/haog1"
+    }
+  ],
   "description": "GCC QR Code Plugin",
   "require-dev": {
     "symfony/var-dumper": "^4.2"
