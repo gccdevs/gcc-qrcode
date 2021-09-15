@@ -8,12 +8,6 @@ function handleGenerateQRCode() {
   $post_type = array_get( $_POST, 'name' );
   $post_id = array_get( $_POST, 'id' );
   $withLogo = array_get( $_POST, 'withLogo' );
-  if(!$post_type) {
-    exit;
-  }
-  if(!$post_id) {
-    exit;
-  }
 
   switch ($type) {
     case 'generate-flush':
@@ -28,6 +22,12 @@ function handleGenerateQRCode() {
       flushQRCode($content, $withLogo);
       break;
     default:
+      if(!$post_type) {
+        exit;
+      }
+      if(!$post_id) {
+        exit;
+      }
       $data = get_permalink($post_id);
       $path = generateQRCode($data, $post_type, $post_id, $withLogo);
       echo json_encode([
@@ -41,9 +41,7 @@ function handleGenerateQRCode() {
 
 function flushQRCode($data, $withLogo) {
   $options = get_option( 'qr_code_settings' );
-  echo 'setting: ' . $options;
-  echo '$withLogo: ' . $withLogo;
-  echo 'here: ' . $data;
+  var_dump($options);
 }
 
 function generateQRCode( $data, $post_type, $post_id, $showLogo = false ) {
@@ -82,8 +80,8 @@ function generateQRCode( $data, $post_type, $post_id, $showLogo = false ) {
 }
 
 function addLogo ($path, $filename) {
-
-  $logoPath = 'https://glorycitychurch.com/wp-content/uploads/2019/01/GC-LOGO-150x150.png';
+  $options = get_option( 'qr_code_settings' );
+  $logoPath = array_get($options, 'logo_uri');
   $logo = imagecreatefrompng($logoPath);
   $QR = imagecreatefrompng(wp_upload_dir()['baseurl'] . '/qr-code-pngs' . $filename);
   $QR_width = imagesx($QR);
@@ -99,9 +97,8 @@ function addLogo ($path, $filename) {
     throw new Error('Invalid logo size');
   }
 
-  // Scale logo to fit in the QR Code
   $logo_qr_width = $QR_width / 4;
-  $logo_qr_height = $logo_height / 4;
+  $logo_qr_height = $QR_height / 4;
 
   $result = imagecopyresampled(
     $QR,
