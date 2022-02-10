@@ -38,7 +38,7 @@
     "glob-promise": "^3.4.0",
     "mini-css-extract-plugin": "^0.4.5",
     "motion-ui": "^2.0.3",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
